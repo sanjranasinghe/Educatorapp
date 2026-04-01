@@ -1,0 +1,33 @@
+{
+  "name": "educator-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@livekit/components-react": "2.9.14",
+    "@livekit/components-styles": "1.1.6",
+    "@supabase/ssr": "0.5.2",
+    "@supabase/supabase-js": "2.49.4",
+    "next": "15.2.4",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "stripe": "17.7.0",
+    "livekit-client": "2.13.3",
+    "livekit-server-sdk": "2.13.3",
+    "zod": "3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "22.13.14",
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.4",
+    "autoprefixer": "10.4.21",
+    "postcss": "8.5.3",
+    "tailwindcss": "3.4.17",
+    "typescript": "5.8.2"
+  }
+}
