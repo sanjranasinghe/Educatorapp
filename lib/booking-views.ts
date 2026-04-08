@@ -11,6 +11,10 @@ export type DashboardLesson = {
   studentName: string;
   studentYear: string;
   parentName: string;
+  lessonSummary: string;
+  homework: string;
+  parentUpdate: string;
+  attendanceStatus: string;
 };
 
 export type AdminBooking = DashboardLesson & {
@@ -29,6 +33,10 @@ type BookingRow = {
   student_name?: unknown;
   student_year?: unknown;
   parent_name?: unknown;
+  lesson_summary?: unknown;
+  homework?: unknown;
+  parent_update?: unknown;
+  attendance_status?: unknown;
 };
 
 function readString(value: unknown) {
@@ -78,7 +86,11 @@ function mapBooking(booking: BookingRow, index = 0): DashboardLesson {
     roomName,
     studentName: readString(booking.student_name),
     studentYear: readString(booking.student_year),
-    parentName: readString(booking.parent_name)
+    parentName: readString(booking.parent_name),
+    lessonSummary: readString(booking.lesson_summary),
+    homework: readString(booking.homework),
+    parentUpdate: readString(booking.parent_update),
+    attendanceStatus: readString(booking.attendance_status)
   };
 }
 
@@ -91,7 +103,9 @@ export async function getAllBookingsForAdmin(): Promise<AdminBooking[]> {
 
   const bookings = await supabase
     .from("bookings")
-    .select("id,lesson_package_id,status,scheduled_at,created_at,notes,livekit_room_name,student_profile_id,student_name,student_year,parent_name")
+    .select(
+      "id,lesson_package_id,status,scheduled_at,created_at,notes,livekit_room_name,student_profile_id,student_name,student_year,parent_name,lesson_summary,homework,parent_update,attendance_status"
+    )
     .order("created_at", { ascending: false });
 
   const bookingRows = (bookings.data || []) as BookingRow[];
@@ -129,7 +143,9 @@ export async function getTutorLessonsByTutorEmail(email: string): Promise<Dashbo
 
   const bookings = await supabase
     .from("bookings")
-    .select("id,lesson_package_id,status,scheduled_at,created_at,notes,livekit_room_name,student_name,student_year,parent_name")
+    .select(
+      "id,lesson_package_id,status,scheduled_at,created_at,notes,livekit_room_name,student_name,student_year,parent_name,lesson_summary,homework,parent_update,attendance_status"
+    )
     .like("notes", `%selected_tutor:${tutor.id}%`)
     .order("scheduled_at", { ascending: true });
 

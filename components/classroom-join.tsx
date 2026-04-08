@@ -3,6 +3,7 @@
 import { AudioConference, LiveKitRoom, RoomAudioRenderer, StartAudio } from "@livekit/components-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CollaborativeWhiteboard } from "@/components/collaborative-whiteboard";
+import { LessonRoomStatus } from "@/components/lesson-room-status";
 import { WhiteboardDemo } from "@/components/whiteboard-demo";
 
 export function ClassroomJoin({
@@ -139,6 +140,9 @@ export function ClassroomJoin({
                 <p className="mt-3 text-sm leading-7 text-white/75">
                   Students and tutors can speak live here while keeping the shared whiteboard open below.
                 </p>
+                <div className="mt-5">
+                  <LessonRoomStatus localIdentity={identity} />
+                </div>
               </div>
               <div className="bg-white">
                 <AudioConference className="min-h-[28rem]" />

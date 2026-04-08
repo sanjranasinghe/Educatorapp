@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 
@@ -12,7 +12,10 @@ export function AuthPanel() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") || "");
     const password = String(formData.get("password") || "");
     const fullName = String(formData.get("fullName") || "");
@@ -95,12 +98,7 @@ export function AuthPanel() {
             Sign up
           </button>
         </div>
-        <form
-          action={async (formData) => {
-            await handleSubmit(formData);
-          }}
-          className="mt-6 grid gap-4"
-        >
+        <form onSubmit={handleSubmit} className="mt-6 grid gap-4">
           {mode === "sign-up" ? (
             <label className="grid gap-2 text-sm font-medium text-ink/80">
               Full name

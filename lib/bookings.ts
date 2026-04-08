@@ -12,6 +12,10 @@ export type DashboardLesson = {
   studentName: string;
   studentYear: string;
   parentName: string;
+  lessonSummary: string;
+  homework: string;
+  parentUpdate: string;
+  attendanceStatus: string;
 };
 
 function readString(value: unknown) {
@@ -166,7 +170,9 @@ export async function getDashboardLessonsByEmail(email: string): Promise<Dashboa
 
   const bookings = await supabase
     .from("bookings")
-    .select("id,lesson_package_id,status,scheduled_at,created_at,notes,livekit_room_name,student_name,student_year,parent_name")
+    .select(
+      "id,lesson_package_id,status,scheduled_at,created_at,notes,livekit_room_name,student_name,student_year,parent_name,lesson_summary,homework,parent_update,attendance_status"
+    )
     .or(`parent_profile_id.eq.${profile.data.id},student_profile_id.eq.${profile.data.id}`)
     .order("created_at", { ascending: false });
 
@@ -186,7 +192,11 @@ export async function getDashboardLessonsByEmail(email: string): Promise<Dashboa
       roomName: readString(booking.livekit_room_name),
       studentName: readString(booking.student_name),
       studentYear: readString(booking.student_year),
-      parentName: readString(booking.parent_name)
+      parentName: readString(booking.parent_name),
+      lessonSummary: readString(booking.lesson_summary),
+      homework: readString(booking.homework),
+      parentUpdate: readString(booking.parent_update),
+      attendanceStatus: readString(booking.attendance_status)
     };
   });
 }

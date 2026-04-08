@@ -45,6 +45,10 @@ create table if not exists bookings (
   student_year text,
   parent_name text,
   notes text,
+  lesson_summary text,
+  homework text,
+  parent_update text,
+  attendance_status text,
   created_at timestamptz not null default now()
 );
 
@@ -52,6 +56,10 @@ alter table bookings add column if not exists parent_profile_id uuid references 
 alter table bookings add column if not exists student_name text;
 alter table bookings add column if not exists student_year text;
 alter table bookings add column if not exists parent_name text;
+alter table bookings add column if not exists lesson_summary text;
+alter table bookings add column if not exists homework text;
+alter table bookings add column if not exists parent_update text;
+alter table bookings add column if not exists attendance_status text;
 
 create table if not exists tutor_availability (
   id uuid primary key default gen_random_uuid(),

@@ -11,6 +11,15 @@ function formatSlot(startsAt: string) {
   }).format(new Date(startsAt));
 }
 
+function formatAttendance(value: string) {
+  return value
+    ? value
+        .split("-")
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ")
+    : "Pending";
+}
+
 export function AdminShell({
   bookings,
   tutors,
@@ -26,7 +35,7 @@ export function AdminShell({
         <p className="text-sm font-semibold uppercase tracking-[0.24em] text-mint">Admin panel</p>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight">Manage bookings and tutor availability</h1>
         <p className="mt-5 max-w-3xl text-base leading-8 text-white/75">
-          This admin view now shows parent bookings, student year levels, current tutor slots, and controls for adding or removing availability.
+          This admin view now shows parent bookings, student year levels, tutor lesson notes, and controls for adding or removing availability.
         </p>
       </div>
 
@@ -59,6 +68,35 @@ export function AdminShell({
                     ) : null}
                   </div>
                 </div>
+                {booking.lessonSummary || booking.homework || booking.parentUpdate || booking.attendanceStatus ? (
+                  <div className="mt-5 rounded-[1.25rem] border border-ink/10 bg-white p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-coral">Lesson progress</p>
+                    <div className="mt-3 grid gap-3 md:grid-cols-2">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink/45">Attendance</p>
+                        <p className="mt-1 text-sm text-ink/80">{formatAttendance(booking.attendanceStatus)}</p>
+                      </div>
+                      {booking.lessonSummary ? (
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink/45">Tutor notes</p>
+                          <p className="mt-1 text-sm leading-6 text-ink/80">{booking.lessonSummary}</p>
+                        </div>
+                      ) : null}
+                      {booking.homework ? (
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink/45">Homework</p>
+                          <p className="mt-1 text-sm leading-6 text-ink/80">{booking.homework}</p>
+                        </div>
+                      ) : null}
+                      {booking.parentUpdate ? (
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink/45">Parent message</p>
+                          <p className="mt-1 text-sm leading-6 text-ink/80">{booking.parentUpdate}</p>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : null}
               </div>
             ))
           ) : (
