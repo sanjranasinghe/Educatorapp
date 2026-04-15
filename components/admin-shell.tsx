@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AdminSlotManager } from "@/components/admin-slot-manager";
 import type { AdminBooking } from "@/lib/booking-views";
 import type { AvailableSlot, AvailableTutor } from "@/lib/availability";
+import { formatLessonStatus, lessonStatusClasses } from "@/lib/lesson-ui";
 
 function formatSlot(startsAt: string) {
   return new Intl.DateTimeFormat("en-AU", {
@@ -40,12 +41,19 @@ export function AdminShell({
       </div>
 
       <section className="mt-8 rounded-[2rem] bg-white p-8 shadow-soft">
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-coral">All bookings</p>
-        <h2 className="mt-2 text-2xl font-semibold">Operations view</h2>
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-coral">All bookings</p>
+            <h2 className="mt-2 text-2xl font-semibold">Operations view</h2>
+          </div>
+          <div className="rounded-full bg-mint px-4 py-2 text-sm font-semibold text-ink">
+            {bookings.length} {bookings.length === 1 ? "booking" : "bookings"}
+          </div>
+        </div>
         <div className="mt-6 grid gap-4">
           {bookings.length ? (
             bookings.map((booking) => (
-              <div key={booking.id} className="rounded-[1.5rem] bg-sand p-5">
+              <div key={booking.id} className="rounded-[1.5rem] bg-sand p-5 shadow-sm">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                   <div>
                     <h3 className="text-lg font-semibold">{booking.subject}</h3>
@@ -55,9 +63,11 @@ export function AdminShell({
                     {booking.studentYear ? <p className="mt-1 text-sm text-ink/70">Year level: {booking.studentYear}</p> : null}
                     <p className="mt-1 text-sm text-ink/70">Tutor: {booking.tutorName}</p>
                   </div>
-                  <div className="text-sm text-ink/75">{booking.startsAt}</div>
+                  <div className="text-sm font-medium text-ink/75">{booking.startsAt}</div>
                   <div className="flex items-center gap-3">
-                    <div className="rounded-full bg-mint px-3 py-1 text-xs font-semibold capitalize text-ink">{booking.status}</div>
+                    <div className={`rounded-full px-3 py-1 text-xs font-semibold ${lessonStatusClasses(booking.status)}`}>
+                      {formatLessonStatus(booking.status)}
+                    </div>
                     {booking.roomName ? (
                       <Link
                         href={`/classroom?room=${encodeURIComponent(booking.roomName)}&identity=${encodeURIComponent("admin-host")}&name=${encodeURIComponent("Admin")}`}

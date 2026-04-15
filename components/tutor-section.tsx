@@ -1,6 +1,8 @@
-import { tutors } from "@/lib/data";
+import { getPublicTutors } from "@/lib/tutor-directory";
 
-export function TutorSection() {
+export async function TutorSection() {
+  const tutors = await getPublicTutors();
+
   return (
     <section id="tutors" className="mx-auto max-w-6xl px-6 py-12">
       <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">

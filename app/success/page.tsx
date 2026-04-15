@@ -4,6 +4,8 @@ import { ensureBookingFromStripeSession } from "@/lib/bookings";
 import { serviceStatus } from "@/lib/env";
 import { getStripeClient } from "@/lib/stripe";
 
+export const dynamic = "force-dynamic";
+
 export default async function SuccessPage({
   searchParams
 }: {

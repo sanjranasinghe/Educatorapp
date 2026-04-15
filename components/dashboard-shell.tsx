@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { serviceStatus } from "@/lib/env";
+import { formatLessonStatus, lessonStatusClasses } from "@/lib/lesson-ui";
 import type { DashboardLesson } from "@/lib/bookings";
 
 function formatAttendance(value: string) {
@@ -57,12 +58,19 @@ export function DashboardShell({
       </div>
 
       <section className="mt-8 rounded-[2rem] bg-white p-8 shadow-soft">
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-ocean">Upcoming lessons</p>
-        <h2 className="mt-2 text-2xl font-semibold">Parent and student schedule</h2>
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-ocean">Upcoming lessons</p>
+            <h2 className="mt-2 text-2xl font-semibold">Parent and student schedule</h2>
+          </div>
+          <div className="rounded-full bg-mint px-4 py-2 text-sm font-semibold text-ink">
+            {lessons.length} {lessons.length === 1 ? "lesson" : "lessons"}
+          </div>
+        </div>
         <div className="mt-6 grid gap-4">
           {lessons.length ? (
             lessons.map((lesson) => (
-              <div key={lesson.id} className="rounded-[1.5rem] bg-sand p-5">
+              <div key={lesson.id} className="rounded-[1.5rem] bg-sand p-5 shadow-sm">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div>
                     <h3 className="text-lg font-semibold">{lesson.subject}</h3>
@@ -70,9 +78,11 @@ export function DashboardShell({
                     {lesson.studentYear ? <p className="mt-1 text-sm text-ink/65">Year level: {lesson.studentYear}</p> : null}
                     <p className="mt-1 text-sm text-ink/65">Tutor: {lesson.tutorName}</p>
                   </div>
-                  <div className="text-sm text-ink/75">{lesson.startsAt}</div>
+                  <div className="text-sm font-medium text-ink/75">{lesson.startsAt}</div>
                   <div className="flex items-center gap-3">
-                    <div className="rounded-full bg-mint px-3 py-1 text-xs font-semibold capitalize text-ink">{lesson.status}</div>
+                    <div className={`rounded-full px-3 py-1 text-xs font-semibold ${lessonStatusClasses(lesson.status)}`}>
+                      {formatLessonStatus(lesson.status)}
+                    </div>
                     {lesson.roomName ? (
                       <Link
                         href={`/classroom?room=${encodeURIComponent(lesson.roomName)}&identity=${encodeURIComponent(identity)}&name=${encodeURIComponent(displayName)}`}

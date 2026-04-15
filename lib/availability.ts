@@ -1,5 +1,6 @@
 import { tutorSlots, tutors } from "@/lib/data";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
+import { tutorDisplayNameFromId, tutorIdFromEmail } from "@/lib/tutor-identity";
 
 export type AvailableTutor = {
   id: string;
@@ -39,6 +40,46 @@ function parseStoredTimezone(value: unknown) {
     tutorId,
     startsAt
   };
+}
+
+function mapStaticTutors(): AvailableTutor[] {
+  return tutors.map((tutor) => ({
+    id: tutor.id,
+    name: tutor.name,
+    subject: tutor.subject,
+    rateAud: tutor.rateAud,
+    blurb: tutor.blurb
+  }));
+}
+
+async function getProfileTutors(): Promise<AvailableTutor[]> {
+  const supabase = getSupabaseAdminClient();
+
+  if (!supabase) {
+    return [];
+  }
+
+  const profiles = await supabase.from("profiles").select("email,full_name").eq("role", "tutor");
+  const staticTutorIds = new Set(tutors.map((tutor) => tutor.id));
+
+  return (profiles.data || [])
+    .map((profile): AvailableTutor | null => {
+      const email = readString(profile.email);
+      const id = tutorIdFromEmail(email);
+
+      if (!id || staticTutorIds.has(id)) {
+        return null;
+      }
+
+      return {
+        id,
+        name: readString(profile.full_name) || tutorDisplayNameFromId(id),
+        subject: "Maths",
+        rateAud: 48,
+        blurb: "New maths tutor profile. Admin can complete detailed subject, rate, and bio fields next."
+      };
+    })
+    .filter((item): item is AvailableTutor => Boolean(item));
 }
 
 export async function seedTutorsAndAvailability() {
@@ -92,16 +133,11 @@ export async function seedTutorsAndAvailability() {
 
 export async function getAvailableTutorsAndSlots() {
   const supabase = getSupabaseAdminClient();
+  const staticTutors = mapStaticTutors();
 
   if (!supabase) {
     return {
-      tutors: tutors.map((tutor) => ({
-        id: tutor.id,
-        name: tutor.name,
-        subject: tutor.subject,
-        rateAud: tutor.rateAud,
-        blurb: tutor.blurb
-      })),
+      tutors: staticTutors,
       slots: tutorSlots
     };
   }
@@ -109,7 +145,10 @@ export async function getAvailableTutorsAndSlots() {
   try {
     await seedTutorsAndAvailability();
 
-    const availabilityRows = await supabase.from("tutor_availability").select("id,timezone");
+    const [availabilityRows, profileTutors] = await Promise.all([
+      supabase.from("tutor_availability").select("id,timezone"),
+      getProfileTutors()
+    ]);
 
     const mappedSlots: AvailableSlot[] = (availabilityRows.data || [])
       .map((item) => {
@@ -128,25 +167,14 @@ export async function getAvailableTutorsAndSlots() {
       .filter((item): item is AvailableSlot => Boolean(item && item.id));
 
     return {
-      tutors: tutors.map((tutor) => ({
-        id: tutor.id,
-        name: tutor.name,
-        subject: tutor.subject,
-        rateAud: tutor.rateAud,
-        blurb: tutor.blurb
-      })),
+      tutors: [...profileTutors, ...staticTutors],
       slots: mappedSlots.length ? mappedSlots : tutorSlots
     };
   } catch {
     return {
-      tutors: tutors.map((tutor) => ({
-        id: tutor.id,
-        name: tutor.name,
-        subject: tutor.subject,
-        rateAud: tutor.rateAud,
-        blurb: tutor.blurb
-      })),
+      tutors: staticTutors,
       slots: tutorSlots
     };
   }
 }
+

@@ -17,10 +17,12 @@ export async function requireAdminAccess() {
 
 export async function createAvailabilitySlot({
   tutorId,
-  startsAt
+  startsAt,
+  tutorEmail
 }: {
   tutorId: string;
   startsAt: string;
+  tutorEmail?: string;
 }) {
   const supabase = getSupabaseAdminClient();
 
@@ -28,8 +30,12 @@ export async function createAvailabilitySlot({
     throw new Error("Supabase is not configured.");
   }
 
-  const tutorProfileEmail = `${tutorId.replace(/-/g, ".")}@brightpath.test`;
-  const profile = await supabase.from("profiles").select("id").eq("email", tutorProfileEmail).maybeSingle();
+  const fallbackTutorProfileEmail = `${tutorId.replace(/-/g, ".")}@brightpath.test`;
+  const profile = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("email", tutorEmail || fallbackTutorProfileEmail)
+    .maybeSingle();
 
   if (!profile.data?.id) {
     throw new Error("Tutor profile not found.");

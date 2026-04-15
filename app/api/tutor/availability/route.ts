@@ -13,6 +13,7 @@ export async function POST(request: Request) {
 
     const created = await createAvailabilitySlot({
       tutorId: context.tutorId,
+      tutorEmail: context.email || undefined,
       startsAt: body.startsAt
     });
 

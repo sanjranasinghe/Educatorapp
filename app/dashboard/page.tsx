@@ -5,6 +5,8 @@ import { DashboardLesson, getDashboardLessonsByEmail, ensureProfileForEmail } fr
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { serviceStatus } from "@/lib/env";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   let email: string | null = null;
   let lessons: DashboardLesson[] = [];

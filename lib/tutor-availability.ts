@@ -1,14 +1,9 @@
-import { tutors } from "@/lib/data";
 import { getCurrentUserContext } from "@/lib/auth-context";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
+import { tutorIdFromEmail } from "@/lib/tutor-identity";
 
 function readString(value: unknown) {
   return typeof value === "string" ? value : "";
-}
-
-function inferTutorIdFromEmail(email: string) {
-  const local = email.split("@")[0].toLowerCase();
-  return tutors.find((tutor) => tutor.id === local.replace(/\./g, "-"))?.id || null;
 }
 
 export async function requireTutorAccess() {
@@ -18,15 +13,9 @@ export async function requireTutorAccess() {
     throw new Error("Tutor access required.");
   }
 
-  const tutorId = inferTutorIdFromEmail(context.email);
-
-  if (!tutorId) {
-    throw new Error("Tutor account is not linked to a tutor profile slug yet.");
-  }
-
   return {
     ...context,
-    tutorId
+    tutorId: tutorIdFromEmail(context.email)
   };
 }
 
@@ -37,11 +26,7 @@ export async function getTutorAvailabilityByEmail(email: string) {
     return [];
   }
 
-  const tutorId = inferTutorIdFromEmail(email);
-
-  if (!tutorId) {
-    return [];
-  }
+  const tutorId = tutorIdFromEmail(email);
 
   const rows = await supabase.from("tutor_availability").select("id,timezone");
 

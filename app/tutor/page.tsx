@@ -6,6 +6,8 @@ import { getTutorLessonsByTutorEmail } from "@/lib/booking-views";
 import { getCurrentUserContext } from "@/lib/auth-context";
 import { getTutorAvailabilityByEmail } from "@/lib/tutor-availability";
 
+export const dynamic = "force-dynamic";
+
 export default async function TutorPage() {
   const { email, role } = await getCurrentUserContext();
 
